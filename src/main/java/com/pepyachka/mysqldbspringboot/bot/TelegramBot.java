@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
@@ -18,7 +19,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()){
             final long chat_id = update.getMessage().getChatId();
             sendTextMessage(chat_id, "Привет!");
-        }        
+        }
+        if (update.getMessage().getText() == null) {
+            int i = 0;
+            i += 20;
+            Sticker sticker = update.getMessage().getSticker();
+            sticker.getEmoji();//1612709158
+        }
     }
 
     private synchronized void sendTextMessage(long chat_id, String message) {
@@ -35,11 +42,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return null;
+        return USERNAME;
     }
 
     @Override
     public String getBotToken() {
-        return null;
+        return TOKEN;
     }
 }
