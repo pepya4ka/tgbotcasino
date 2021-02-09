@@ -37,6 +37,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.getMessage().getText() != null) {
             if (user.getCoins() == 0) {
                     sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет монет для ставки! \nПожалуйста, обратитесь к администратору");
+                    return;
             }
             if (!flRate && isDigit(update.getMessage().getText())) {
                 rate = Integer.parseInt(update.getMessage().getText());
