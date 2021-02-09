@@ -33,42 +33,46 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setChatId(update.getMessage().getChatId().toString());
         sendMessage.setText("Вы ввели неверную команду.\nВведите вашу ставку");
 
+        User user = mainController.getById(update.getMessage().getFrom().getId());
         if (update.getMessage().getText() != null) {
+            if (user.getCoins() == 0) {
+                    sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет монет для ставки! \nПожалуйста, обратитесь к администратору");
+            }
             if (!flRate && isDigit(update.getMessage().getText())) {
                 rate = Integer.parseInt(update.getMessage().getText());
-                User user = mainController.getById(update.getMessage().getFrom().getId());
                 if (rate > user.getCoins()) {
                     rate = 0;
                     sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет столько монет! \nПожалуйста, введите верное число");
                 }
                 flRate = true;
-//                sendTextMessage(update.getMessage().getChatId().toString(), "Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
+                //                sendTextMessage(update.getMessage().getChatId().toString(), "Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
                 sendMessage.setText("Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
             }
 
-//
-//            if (!flRate)
-//                sendTextMessage(update.getMessage().getChatId().toString(), "");
+            //
+            //            if (!flRate)
+            //                sendTextMessage(update.getMessage().getChatId().toString(), "");
 
             if (update.getMessage().getText().equals("/start")) {
-                User user = mainController.getById(update.getMessage().getFrom().getId());
-                if (user == null)
+                user = mainController.getById(update.getMessage().getFrom().getId());
+                if (user == null) {
                     sendMessage.setText(mainController.addNewUser(createUser(update.getMessage())));
-                else
+                } else {
                     sendMessage.setText("Вы уже зарегистрированы. Ваше количество монет - "
-                            + user.getCoins()
-                            + ".\nВведите вашу ставку");
+                        + user.getCoins()
+                        + ".\nВведите вашу ставку");
+                }
             }
 
             if (update.getMessage().getText().equals("/countCoins")) {
-                User user = mainController.getById(update.getMessage().getFrom().getId());
+                user = mainController.getById(update.getMessage().getFrom().getId());
                 sendMessage.setText("Ваше количество монет = " + user.getCoins() + ".\nВведите вашу ставку");
             }
         }
 
-        if (update.getMessage().getText() == null && flRate)
+        if (update.getMessage().getText() == null && flRate) {
             if (update.getMessage().getDice().getEmoji().equals("\uD83C\uDFB0")) {
-                User user = mainController.getById(update.getMessage().getFrom().getId());
+                user = mainController.getById(update.getMessage().getFrom().getId());
                 flRate = false;
                 switch (update.getMessage().getDice().getValue()) {
                     case 1:
@@ -97,6 +101,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 setRate(0);
             }
+        }
         try {
             Thread.sleep(1950);
             execute(sendMessage);
