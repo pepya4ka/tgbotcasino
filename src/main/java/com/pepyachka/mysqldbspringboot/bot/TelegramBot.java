@@ -1,8 +1,12 @@
 package com.pepyachka.mysqldbspringboot.bot;
 
+import com.pepyachka.mysqldbspringboot.MainController;
+import com.pepyachka.mysqldbspringboot.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -10,34 +14,134 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
+    final
+    MainController mainController;
+
     private static final String TOKEN = "1428726749:AAF4gt0ptFpMrnCpR53vxsH8CCv6AccWYOE";
 
     private static final String USERNAME = "PepyachkaCasino_bot";
 
+    private boolean flRate = false;
+    private int rate = 0;
+
+    public TelegramBot(MainController mainController) {
+        this.mainController = mainController;
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()){
-            final long chat_id = update.getMessage().getChatId();
-            sendTextMessage(chat_id, "Привет!");
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(update.getMessage().getChatId().toString());
+        sendMessage.setText("Вы ввели неверную команду.\nВведите вашу ставку");
+
+        if (update.getMessage().getText() != null) {
+            if (!flRate && isDigit(update.getMessage().getText())) {
+                rate = Integer.parseInt(update.getMessage().getText());
+                User user = mainController.getById(update.getMessage().getFrom().getId());
+                if (rate > user.getCoins()) {
+                    rate = 0;
+                    sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет столько монет! \nПожалуйста, введите верное число");
+                }
+                flRate = true;
+//                sendTextMessage(update.getMessage().getChatId().toString(), "Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
+                sendMessage.setText("Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
+            }
+
+//
+//            if (!flRate)
+//                sendTextMessage(update.getMessage().getChatId().toString(), "");
+
+            if (update.getMessage().getText().equals("/start")) {
+                User user = mainController.getById(update.getMessage().getFrom().getId());
+                if (user == null)
+                    sendMessage.setText(mainController.addNewUser(createUser(update.getMessage())));
+                else
+                    sendMessage.setText("Вы уже зарегистрированы. Ваше количество монет - "
+                            + user.getCoins()
+                            + ".\nВведите вашу ставку");
+            }
+
+            if (update.getMessage().getText().equals("/countCoins")) {
+                User user = mainController.getById(update.getMessage().getFrom().getId());
+                sendMessage.setText("Ваше количество монет = " + user.getCoins() + ".\nВведите вашу ставку");
+            }
         }
-        if (update.getMessage().getText() == null) {
-            int i = 0;
-            i += 20;
-            Sticker sticker = update.getMessage().getSticker();
-            sticker.getEmoji();//1612709158
+
+        if (update.getMessage().getText() == null && flRate)
+            if (update.getMessage().getDice().getEmoji().equals("\uD83C\uDFB0")) {
+                User user = mainController.getById(update.getMessage().getFrom().getId());
+                flRate = false;
+                switch (update.getMessage().getDice().getValue()) {
+                    case 1:
+                        mainController.updateCoins(update.getMessage().getFrom().getId(), 0);
+                        sendMessage.setText("Возврат.\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
+                        break;
+                    case 22:
+                        mainController.updateCoins(update.getMessage().getFrom().getId(), rate * 3);
+                        user.setCoins(user.getCoins() + rate * 3);
+                        sendMessage.setText("x3!\nВаш выигрыш - " + rate * 3 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
+                        break;
+                    case 43:
+                        mainController.updateCoins(update.getMessage().getFrom().getId(), rate * 10);
+                        user.setCoins(user.getCoins() + rate * 10);
+                        sendMessage.setText("x10!!\nВаш выигрыш - " + rate * 10 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
+                        break;
+                    case 64:
+                        mainController.updateCoins(update.getMessage().getFrom().getId(), rate * 100);
+                        user.setCoins(user.getCoins() + rate * 100);
+                        sendMessage.setText("x100!!!\nВаш выигрыш - " + rate * 100 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
+                        break;
+                    default:
+                        mainController.updateCoins(update.getMessage().getFrom().getId(), rate * (-1));
+                        user.setCoins(user.getCoins() + rate * (-1));
+                        sendMessage.setText("Вы проиграли:(\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
+                }
+                setRate(0);
+            }
+        try {
+            Thread.sleep(1950);
+            execute(sendMessage);
+        } catch (TelegramApiException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private synchronized void sendTextMessage(long chat_id, String message) {
+    private synchronized void sendTextMessage(String chat_id, String message) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(false)
-                .setChatId(chat_id)
-                .setText(message);
+        sendMessage.enableMarkdown(false);
+        sendMessage.setChatId(chat_id);
+        sendMessage.setText(message);
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    private User createUser(Message message) {
+        User user = new User();
+        user.setId(message.getFrom().getId());
+        user.setChatId(Math.toIntExact(message.getChatId()));
+        user.setUsername(message.getFrom().getUserName());
+        user.setCoins(1000);
+        user.setMaxPrize(0);
+
+        return user;
+    }
+
+    private static boolean isDigit(String s) throws NumberFormatException {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void setRate(int rate) {
+        flRate = false;
+        this.rate = rate;
     }
 
     @Override
