@@ -1,5 +1,6 @@
-package com.pepyachka.mysqldbspringboot;
+package com.pepyachka.mysqldbspringboot.repository;
 
+import com.pepyachka.mysqldbspringboot.model.User;
 import org.springframework.data.repository.CrudRepository;
 
 import org.springframework.stereotype.Repository;

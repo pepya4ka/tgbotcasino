@@ -1,7 +1,7 @@
 package com.pepyachka.mysqldbspringboot.bot;
 
 import com.pepyachka.mysqldbspringboot.MainController;
-import com.pepyachka.mysqldbspringboot.User;
+import com.pepyachka.mysqldbspringboot.model.User;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -68,6 +68,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (update.getMessage().getText().equals("/countCoins")) {
                 user = mainController.getById(update.getMessage().getFrom().getId());
                 sendMessage.setText("Ваше количество монет = " + user.getCoins() + ".\nВведите вашу ставку");
+            }
+
+            if (update.getMessage().getText().equals("/all")) {
+                sendMessage.setText(mainController.getAllUsers(user.getId())+ "\nВведите вашу ставку");
             }
         }
 
