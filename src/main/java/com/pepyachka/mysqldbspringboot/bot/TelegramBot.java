@@ -15,9 +15,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     final
     MainController mainController;
 
-    private static final String TOKEN = "1428726749:AAF4gt0ptFpMrnCpR53vxsH8CCv6AccWYOE";
+//    private static final String TOKEN = "1428726749:AAGDq2WUb0OMGLpKT7CONN7sICLmr5Y_GCc";
+    private static final String TOKEN = System.getenv("TOKEN");
 
-    private static final String USERNAME = "PepyachkaCasino_bot";
+//    private static final String USERNAME = "PepyachkaCasino_bot";
+    private static final String USERNAME = System.getenv("USERNAME");
 
     private boolean flRate = false;
     private int rate = 0;
