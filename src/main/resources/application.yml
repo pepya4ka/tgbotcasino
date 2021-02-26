@@ -1,4 +1,0 @@
-#heroku
-tg:
-  token: ${TOKEN}
-  botname: ${USERNAME}
