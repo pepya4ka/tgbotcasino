@@ -16,11 +16,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     final
     MainController mainController;
 
-    @Value("${tg.token}")
-    private String TOKEN;
+    private static final String TOKEN = System.getenv("TOKEN");
 
-    @Value("${tg.username}")
-    private String USERNAME;
+    private static final String USERNAME = System.getenv("USERNAME");
+
+//    @Value("${tg.token}")
+//    private String TOKEN;
+//
+//    @Value("${tg.username}")
+//    private String USERNAME;
 
     private boolean flRate = false;
     private int rate = 0;
