@@ -54,32 +54,32 @@ public class TelegramBot extends TelegramLongPollingBot {
                     sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет столько монет! \nПожалуйста, введите верное число");
                 }
                 flRate = true;
-                sendTextMessage(update.getMessage().getChatId().toString(), "Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
+
+                //                sendTextMessage(update.getMessage().getChatId().toString(), "Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
+                sendMessage.setText("Ваша ставка принята, пожалуйста, отправьте " + "\uD83C\uDFB0");
             }
+
+            //
+            //            if (!flRate)
+            //                sendTextMessage(update.getMessage().getChatId().toString(), "");
 
             if (update.getMessage().getText().equals("/start")) {
                 user = mainController.getById(update.getMessage().getFrom().getId());
                 if (user == null) {
-                    //                    sendTextMessage(update.getMessage().getChatId().toString(), mainController.addNewUser(createUser(update.getMessage())));
                     sendMessage.setText(mainController.addNewUser(createUser(update.getMessage())));
                 } else {
-                    sendTextMessage(update.getMessage().getChatId().toString(), "Вы уже зарегистрированы. Ваше количество монет - "
+                    sendMessage.setText("Вы уже зарегистрированы. Ваше количество монет - "
                         + user.getCoins()
                         + ".\nВведите вашу ставку");
-                    //                    sendMessage.setText("Вы уже зарегистрированы. Ваше количество монет - "
-                    //                        + user.getCoins()
-                    //                        + ".\nВведите вашу ставку");
                 }
             }
 
             if (update.getMessage().getText().equals("/countCoins")) {
                 user = mainController.getById(update.getMessage().getFrom().getId());
-                //                sendTextMessage(update.getMessage().getChatId().toString(), "Ваше количество монет = " + user.getCoins() + ".\nВведите вашу ставку");
                 sendMessage.setText("Ваше количество монет = " + user.getCoins() + ".\nВведите вашу ставку");
             }
 
             if (update.getMessage().getText().equals("/all")) {
-                //                sendTextMessage(update.getMessage().getChatId().toString(), mainController.getAllUsers(user.getId()) + "\nВведите вашу ставку");
                 sendMessage.setText(mainController.getAllUsers(user.getId()) + "\nВведите вашу ставку");
             }
         }
@@ -91,37 +91,31 @@ public class TelegramBot extends TelegramLongPollingBot {
                 switch (update.getMessage().getDice().getValue()) {
                     case 1:
                         mainController.updateCoins(update.getMessage().getFrom().getId(), 0);
-                        //                                                sendTextMessage(update.getMessage().getChatId().toString(), "Возврат.\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         sendMessage.setText("Возврат.\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         break;
                     case 22:
                         mainController.updateCoins(update.getMessage().getFrom().getId(), rate * 3);
                         user.setCoins(user.getCoins() + rate * 3);
-                        //                                                sendTextMessage(update.getMessage().getChatId().toString(), "x3!\nВаш выигрыш - " + rate * 3 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         sendMessage.setText("x3!\nВаш выигрыш - " + rate * 3 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         break;
                     case 43:
                         mainController.updateCoins(update.getMessage().getFrom().getId(), rate * 10);
                         user.setCoins(user.getCoins() + rate * 10);
-                        //                                                sendTextMessage(update.getMessage().getChatId().toString(), "x10!!\nВаш выигрыш - " + rate * 10 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         sendMessage.setText("x10!!\nВаш выигрыш - " + rate * 10 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         break;
                     case 64:
                         mainController.updateCoins(update.getMessage().getFrom().getId(), rate * 100);
                         user.setCoins(user.getCoins() + rate * 100);
-                        //                                                sendTextMessage(update.getMessage().getChatId().toString(), "x100!!!\nВаш выигрыш - " + rate * 100 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         sendMessage.setText("x100!!!\nВаш выигрыш - " + rate * 100 + ".\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         break;
                     default:
                         mainController.updateCoins(update.getMessage().getFrom().getId(), rate * (-1));
                         user.setCoins(user.getCoins() + rate * (-1));
-                        //                                                sendTextMessage(update.getMessage().getChatId().toString(), "Вы проиграли:(\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                         sendMessage.setText("Вы проиграли:(\nВаше количество монет = " + user.getCoins() + "\nВведите вашу ставку");
                 }
                 setRate(0);
             }
         }
-        //        sendTextMessage(update.getMessage().getChatId().toString(), "Вы ввели неверную команду.\nВведите вашу ставку");
         try {
             Thread.sleep(1950);
             execute(sendMessage);
