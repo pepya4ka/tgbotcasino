@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +83,17 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             if (update.getMessage().getText().equals("/all")) {
                 sendMessage.setText(mainController.getAllUsers(user.getId()) + "\nВведите вашу ставку");
+            }
+            if (update.getMessage().getText().equals("Получить бонус")) {
+                LocalDateTime currentDate = LocalDateTime.now();
+                if (user.getPrizeDate() == null)
+                    user.setPrizeDate(currentDate);
+                if (validationDate(user.getPrizeDate())) {
+                    user = mainController.updateCoins(user.getId(), 500);
+                    sendMessage.setText("Ежедневный бонус получен!\nВведите вашу ставку");
+                } else {
+                    sendMessage.setText("Ежедневный бонус уже был получен!\nВведите вашу ставку");
+                }
             }
         }
 
@@ -192,5 +204,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         keyboardRowList.add(keyboardFirstRow);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
+    }
+
+    private boolean validationDate(LocalDateTime datePrize) {
+        LocalDateTime currentDate = LocalDateTime.now();
+        if (currentDate.getYear() < datePrize.getYear() || currentDate.getMonth().getValue() < datePrize.getMonth().getValue())
+            return true;
+        return currentDate.getYear() == datePrize.getYear() && currentDate.getMonth().getValue() == datePrize.getMonth().getValue() &&
+            currentDate.getDayOfMonth() < datePrize.getDayOfMonth();
     }
 }

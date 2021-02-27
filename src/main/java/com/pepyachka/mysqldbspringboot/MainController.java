@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class MainController {
         // This returns a JSON or XML with the users
     }
 
-    @GetMapping(path = "/getById")
+    @GetMapping(path = "/get-by-id")
     public @ResponseBody
     User getById(@RequestParam Integer id) {
         if (!userRepository.findById(id).isPresent()) {
@@ -78,7 +79,14 @@ public class MainController {
         }
     }
 
-    @GetMapping(path = "/updateCoins")
+    @GetMapping(path = "/update-date-prize")
+    public @ResponseBody
+    User updateDatePrize(@RequestParam Integer id, @RequestParam User user) {
+        userRepository.save(user);
+        return user;
+    }
+
+    @GetMapping(path = "/update-Coins")
     public @ResponseBody
     User updateCoins(@RequestParam Integer id, @RequestParam Integer coins) {
         User user = userRepository.findById(id).get();
@@ -87,9 +95,9 @@ public class MainController {
         return user;
     }
 
-    @GetMapping(path = "/getCoins")
+    @GetMapping(path = "/get-coins")
     public @ResponseBody
-    String updateCoins(@RequestParam Integer id) {
+    String getCoins(@RequestParam Integer id) {
         User user = userRepository.findById(id).get();
         return user.getCoins().toString();
     }

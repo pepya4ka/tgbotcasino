@@ -3,6 +3,7 @@ package com.pepyachka.mysqldbspringboot.model;
 import javax.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 
 @Entity // This tells Hibernate to make a table out of this class
 @Table (name = "customer")
@@ -28,4 +29,8 @@ public class User {
     @Basic
     @Column(name = "maxPrize")
     private Integer maxPrize;
+
+    @Basic
+    @Column(name = "date_prize")
+    private LocalDateTime prizeDate;
 }
