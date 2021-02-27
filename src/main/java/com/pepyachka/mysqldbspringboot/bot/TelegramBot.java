@@ -52,6 +52,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 if (rate > user.getCoins() || rate < 0) {
                     rate = 0;
                     sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет столько монет! \nПожалуйста, введите верное число");
+                    return;
                 }
                 flRate = true;
 
