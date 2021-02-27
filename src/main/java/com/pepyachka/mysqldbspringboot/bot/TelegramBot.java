@@ -49,7 +49,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     return;
                 }
                 rate = Integer.parseInt(update.getMessage().getText());
-                if (rate > user.getCoins() || rate < 0) {
+                if (rate > user.getCoins()) {
                     rate = 0;
                     sendTextMessage(update.getMessage().getChatId().toString(), "У Вас нет столько монет! \nПожалуйста, введите верное число");
                 }
