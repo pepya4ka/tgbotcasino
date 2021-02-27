@@ -60,7 +60,8 @@ public class MainController {
                 User tempUser = userIterator.next();
                 result.append(tempUser.getId()).append(" ");
                 result.append(tempUser.getUsername() != null ? tempUser.getUsername() : "GENERAL_USER").append(" ");
-                result.append(tempUser.getCoins()).append(";\n");
+                result.append(tempUser.getCoins()).append(" ");
+                result.append(tempUser.getPrizeDate()).append(";\n");
             }
             return result.toString();
         } else {
