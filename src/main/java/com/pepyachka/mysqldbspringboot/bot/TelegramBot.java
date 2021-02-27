@@ -8,7 +8,13 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
@@ -72,7 +78,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
 
             if (update.getMessage().getText().equals("/all")) {
-                sendMessage.setText(mainController.getAllUsers(user.getId())+ "\nВведите вашу ставку");
+                sendMessage.setText(mainController.getAllUsers(user.getId()) + "\nВведите вашу ставку");
             }
         }
 
@@ -122,6 +128,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage.setChatId(chat_id);
         sendMessage.setText(message);
         try {
+            setButtonsMainMenu(sendMessage);
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
@@ -161,5 +168,26 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return TOKEN;
+    }
+
+    private ReplyKeyboardMarkup getReplyKeyboardMarkup(SendMessage sendMessage) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+        return replyKeyboardMarkup;
+    }
+
+    public void setButtonsMainMenu(SendMessage sendMessage) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = getReplyKeyboardMarkup(sendMessage);
+
+        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+
+        keyboardFirstRow.add(new KeyboardButton("Получить бонус"));
+
+        keyboardRowList.add(keyboardFirstRow);
+        replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
 }
