@@ -86,9 +86,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
             if (update.getMessage().getText().equals("Получить бонус")) {
                 LocalDateTime currentDate = LocalDateTime.now();
-                if (user.getPrizeDate() == null)
-                    user.setPrizeDate(currentDate);
-                if (validationDate(user.getPrizeDate())) {
+                if (user.getPrizeDate() == null || validationDate(user.getPrizeDate())) {
+                    System.err.println("ya tut");
                     user = mainController.updateCoins(user.getId(), 500);
                     sendMessage.setText("Ежедневный бонус получен!\nВведите вашу ставку");
                 } else {
@@ -157,6 +156,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         user.setUsername(message.getFrom().getUserName());
         user.setCoins(1000);
         user.setMaxPrize(0);
+        user.setPrizeDate(LocalDateTime.now().minusDays(2));
 
         return user;
     }
