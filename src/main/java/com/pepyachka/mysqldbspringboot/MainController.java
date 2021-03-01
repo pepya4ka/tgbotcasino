@@ -104,8 +104,8 @@ public class MainController {
         return user.getCoins().toString();
     }
 
-    @GetMapping("/wakemydyno.txt")
-    public String wakeMyDyno() {
-        return "wakemydyno.txt";
+    @PostMapping("/wakemydyno.txt")
+    public void wakeMyDyno() {
+//        return "wakemydyno.txt";
     }
 }
