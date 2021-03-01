@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @Controller // This means that this class is a Controller
-@RequestMapping(path = "/") // This means URL's start with /demo (after Application path)
+//@RequestMapping(path = "/") // This means URL's start with /demo (after Application path)
 public class MainController {
 
     // This means to get the bean called userRepository
@@ -28,6 +28,12 @@ public class MainController {
     public MainController(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+    }
+
+    @GetMapping(path = "/")
+    public String home(Model model) {
+        model.addAttribute("title", "Главная страница");
+        return "home";
     }
 
     @PostMapping(path = "/add") // Map ONLY POST Requests
@@ -52,6 +58,7 @@ public class MainController {
         for (UserRole ur : userRoleList) {
             if (ur.getCustomer_id().intValue() == id.intValue()) {
                 fl = true;
+                break;
             }
         }
         if (fl) {
@@ -106,6 +113,6 @@ public class MainController {
 
     @PostMapping("/wakemydyno.txt")
     public void wakeMyDyno() {
-//        return "wakemydyno.txt";
+//        return "wakemydyno";
     }
 }
