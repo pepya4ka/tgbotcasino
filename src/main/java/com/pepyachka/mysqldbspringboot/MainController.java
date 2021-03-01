@@ -5,6 +5,7 @@ import com.pepyachka.mysqldbspringboot.model.UserRole;
 import com.pepyachka.mysqldbspringboot.repository.RoleRepository;
 import com.pepyachka.mysqldbspringboot.repository.UserRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,5 +102,10 @@ public class MainController {
     String getCoins(@RequestParam Integer id) {
         User user = userRepository.findById(id).get();
         return user.getCoins().toString();
+    }
+
+    @GetMapping("/wakemydyno.txt")
+    public String wakeMyDyno() {
+        return "wakemydyno.txt";
     }
 }
